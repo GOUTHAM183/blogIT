@@ -1,0 +1,25 @@
+{% extends "blog/base.html" %} {% load crispy_forms_tags %} {% block content %}
+<div class="content-section">
+  <form method="post">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Blog Post</legend>
+      {{ form.media }} {{ form|crispy }}
+      <textarea
+        name="tags"
+        id="id_tags"
+        rows="3"
+        cols="40"
+        placeholder="Enter tags separated by commas"
+        required
+      >
+{{ form.initial.tags }}</textarea
+      >
+      <!-- Display the initial value for the 'tags' field -->
+    </fieldset>
+    <div class="form-group">
+      <button class="btn btn-outline-info" type="submit">Post</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'blog/base.html' %} {% block content %} {% if user.is_authenticated
+and user.is_staff %}
+<h1>Block/Unblock Post</h1>
+<p>
+  Are you sure you want to {% if post.is_blocked %}unblock{% else %}block{%
+  endif %} {{ post.title }}?
+</p>
+<form method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="post_id" value="{{ post.id }}" />
+  <button
+    type="submit"
+    class="btn {% if post.is_blocked %}btn-success{% else %}btn-danger{% endif %}"
+  >
+    {% if post.is_blocked %}Unblock{% else %}Block{% endif %} Post
+  </button>
+  <a href="{% url 'view_posts' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% else %}
+<h1>Access Denied</h1>
+<p>You don't have permission to view this page.</p>
+{% endif %} {% endblock %}

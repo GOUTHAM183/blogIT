@@ -1,0 +1,28 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+  <h1>BLock/Unblock Users</h1>
+<hr/>
+
+  {% for user in users %}
+    <h2>{{ user.username }}</h2>
+    <p>
+      {% if user.is_active %}
+        Use the form below to block the user:
+        <form method="post" action="{% url 'block_user' user_id=user.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="user_id" value="{{ user.id }}" />
+          <button type="submit" class="btn btn-danger">Block User</button>
+        </form>
+      {% else %}
+        Use the form below to unblock the user:
+        <form method="post" action="{% url 'unblock_user' user_id=user.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="user_id" value="{{ user.id }}" />
+          <button type="submit" class="btn btn-success">Unblock User</button>
+        </form>
+      {% endif %}
+    </p>
+  {% endfor %}
+
+{% endblock %}

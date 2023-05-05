@@ -1,0 +1,11 @@
+<!-- unblock_user.html -->
+
+{% extends 'blog/base.html' %} {% block content %}
+<h1>Unblock User</h1>
+<p>Are you sure you want to unblock {{ user.username }}?</p>
+<form method="POST">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success">Unblock User</button>
+  <a href="{% url 'custom_admin_panel' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

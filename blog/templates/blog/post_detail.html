@@ -1,0 +1,131 @@
+{%extends "blog/base.html" %} {% block content%}
+<style>
+  .like-dislike {
+    font-size: 20px;
+  }
+</style>
+<article class="media content-section">
+  <img
+    src="{{object.author.profile.image.url}}"
+    class="rounded-circle article-img"
+  />
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="{% url 'user-posts' post.author.username%}"
+        >{{ object.author }}</a
+      >
+      <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+      {% if object.author == user%}
+      <div>
+        <a
+          class="btn btn-secondary btn-sm mt-1 mb-1"
+          href="{% url 'post-update' object.id%}"
+          >Update</a
+        >
+        <a
+          class="btn btn-danger btn-sm mt-1 mb-1"
+          href="{% url 'post-delete' object.id%}"
+          >Delete</a
+        >
+      </div>
+      {%endif%}
+    </div>
+    <h2 class="article-title">{{ object.title }}</h2>
+    <p class="article-content">{{ object.content|safe }}</p>
+    <p>
+      Tags: {% for tag in post.tags.all %}<a
+        href="{% url 'tagged_posts' tag_name=tag.name %}"
+        >{{ tag.name }}</a
+      >
+
+      {% endfor %}
+    </p>
+    <hr />
+    <p>Likes: {{ num_likes }} Dislikes: {{ num_dislikes }}</p>
+
+    <form action="{% url 'post-like' object.id %}" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="pk" value="{{ object.id }}" />
+      <button type="submit" name="post-like">
+        <span class="like-dislike">&#x1F44D;</span>
+      </button>
+    </form>
+
+    <form action="{% url 'post-dislike' object.id %}" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="pk" value="{{ object.id }}" />
+      <button type="submit" name="post-dislike">
+        <span class="like-dislike">&#x1F44E;</span>
+      </button>
+    </form>
+    <br />
+    <hr />
+    <p class="article-content">
+      <b>Rating:</b>
+      <span id="avg-rating">{{ object.rating|floatformat:2 }}</span>
+    </p>
+    <form
+      action="{% url 'rate-post' object.id %}"
+      method="POST"
+      id="rating-form"
+    >
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="rating">Rate this post:</label>
+        <select name="rating" class="form-control" id="rating">
+          <option value="">--Choose a rating--</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br />
+    <div class="comment">
+      <h5>Comments...</h5>
+      {% if not post.comments.all %} No comments yet...
+      <a href="{% url 'add_comment' post.pk %}">Add One</a>
+      {% else %}
+      <a href="{% url 'add_comment' post.pk %}"
+        ><button type="button" class="btn btn-dark">Add Comment</button></a
+      >
+
+      <br />
+      {% for comment in post.comments.all %}
+      <strong>
+        {{ comment.name }} - on {{ comment.date }}
+        <br />
+      </strong>
+      {{ comment.body }}
+      <br /><br />
+      {% endfor %} {% endif %}
+    </div>
+  </div>
+</article>
+{% endblock%} {% block script %}
+<script>
+  $("#rating-form").submit(function (event) {
+    event.preventDefault();
+    var form = $(this);
+    var url = form.attr("action");
+    var method = form.attr("method");
+    var data = form.serialize();
+
+    $.ajax({
+      url: url,
+      method: method,
+      data: data,
+      success: function (response) {
+        $("#avg-rating").html(response.avg);
+        form.hide();
+      },
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      },
+    });
+  });
+</script>
+{% endblock script %}

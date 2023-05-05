@@ -1,0 +1,9 @@
+{% extends 'blog/base.html' %} {% block content %}
+<h1>Block User</h1>
+<p>Are you sure you want to block {{ user.username }}?</p>
+<form method="POST">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Block User</button>
+  <a href="{% url 'view_posts' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
